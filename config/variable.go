@@ -22,3 +22,5 @@ type Variable interface {
 	IsOptional() bool
 	IsEditable() bool
 }
+
+type VariableChangeCallback func(Variable, Value, Value)

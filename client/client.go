@@ -7,7 +7,10 @@ import (
 )
 
 type Store interface {
-	VariableList(context.Context, config.Version) ([]config.Variable, error)
+	Variables(context.Context, config.Version) ([]config.Variable, error)
+	SetVersionChangeCallback(config.VersionChangeCallback) error
+	SetVariableChangeCallback(config.VariableChangeCallback) error
+	SetVariableChangeByNameCallback(string, config.VariableChangeCallback) error
 }
 
 type Client struct {
@@ -25,7 +28,7 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 
 	// TODO: parallel check
 	for _, s := range stores {
-		variables, err := s.VariableList(ctx, version)
+		variables, err := s.Variables(ctx, version)
 		if err != nil {
 			return nil, err
 		}
@@ -36,4 +39,37 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 	}
 
 	return c, nil
+}
+
+func (c *Client) SetVersionChangeCallback(callback config.VersionChangeCallback) error {
+	for _, store := range c.stores {
+		err := store.SetVersionChangeCallback(callback)
+		if err != nil && !config.IsNotImplemented(err) {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *Client) SetVariableChangeCallback(callback config.VariableChangeCallback) error {
+	for _, store := range c.stores {
+		err := store.SetVariableChangeCallback(callback)
+		if err != nil && !config.IsNotImplemented(err) {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *Client) SetVariableChangeByNameCallback(name string, callback func(config.Variable, config.Value, config.Value)) error {
+	for _, store := range c.stores {
+		err := store.SetVariableChangeByNameCallback(name, callback)
+		if err != nil && !config.IsNotImplemented(err) {
+			return err
+		}
+	}
+
+	return nil
 }

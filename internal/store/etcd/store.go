@@ -24,52 +24,11 @@ func NewStore(client *clientv3.Client) *Store {
 	}
 }
 
-func (s *Store) VersionList(context.Context) ([]config.Version, error) {
+func (s *Store) Versions(context.Context) ([]config.Version, error) {
 	return nil, config.ErrorNotImplemented
 }
 
-func (s *Store) VersionCreate(ctx context.Context, version config.Version) error {
-	key, err := getVersionKey(version.ProjectID(), version.ID())
-	if err != nil {
-		return err
-	}
-
-	_, err = s.client.Put(ctx, key, "")
-
-	return err
-}
-
-func (s *Store) VersionRead(ctx context.Context, version config.Version) (config.Version, error) {
-	key, err := getVersionKey(version.ProjectID(), version.ID())
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := s.client.Get(ctx, key)
-	if err != nil {
-		return nil, err
-	}
-
-	if response.Count == 0 {
-		return nil, config.ErrorVersionNotFound
-	}
-
-	return version, nil
-}
-
-func (s *Store) VersionUpdate(context.Context, config.Version) error {
-	return config.ErrorNotImplemented
-}
-
-func (s *Store) VersionDelete(context.Context, config.Version) error {
-	return config.ErrorNotImplemented
-}
-
-func (s *Store) VersionSetChangeCallback(func(config.Version, config.Version)) {
-
-}
-
-func (s *Store) VariableList(ctx context.Context, version config.Version) ([]config.Variable, error) {
+func (s *Store) Variables(ctx context.Context, version config.Version) ([]config.Variable, error) {
 	key, err := getVersionKey(version.ProjectID(), version.ID())
 	if err != nil {
 		return nil, err
@@ -119,11 +78,16 @@ func (s *Store) VariableDelete(context.Context, config.Version, config.Variable)
 	return config.ErrorNotImplemented
 }
 
-func (s *Store) VariableSetAnyChangeCallback(func(config.Variable, config.Value, config.Value)) {
+func (s *Store) SetVersionChangeCallback(config.VersionChangeCallback) error {
+	return config.ErrorNotImplemented
 }
 
-func (s *Store) VariableSetKeyChangeCallback(func(config.Value, config.Value)) {
+func (s *Store) SetVariableChangeCallback(config.VariableChangeCallback) error {
+	return config.ErrorNotImplemented
+}
 
+func (s *Store) SetVariableChangeByNameCallback(string, config.VariableChangeCallback) error {
+	return config.ErrorNotImplemented
 }
 
 func getVersionKey(projectID uint64, versionID string) (string, error) {

@@ -14,21 +14,10 @@ type Updater struct {
 }
 
 func NewUpdater(ctx context.Context, version config.Version, store store.Store) (*Updater, error) {
-	v, err := store.VersionRead(ctx, version)
-	if err != nil {
-		if err != config.ErrorVersionNotFound {
-			return nil, err
-		}
-
-		if err = store.VersionCreate(ctx, version); err != nil {
-			return nil, err
-		}
-
-		v = version
-	}
+	// TODO: create version if needed
 
 	u := &Updater{
-		version: v,
+		version: version,
 		store:   store,
 	}
 
