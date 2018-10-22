@@ -2,16 +2,21 @@ package client
 
 import (
 	"context"
+
 	"github.com/kihamo/runtime-config/config"
 )
 
+type Store interface {
+	VariableList(context.Context, config.Version) ([]config.Variable, error)
+}
+
 type Client struct {
 	version   config.Version
-	stores    []config.Store
+	stores    []Store
 	variables map[string]config.Variable
 }
 
-func NewClient(ctx context.Context, version config.Version, stores ...config.Store) (*Client, error) {
+func NewClient(ctx context.Context, version config.Version, stores ...Store) (*Client, error) {
 	c := &Client{
 		version:   version,
 		stores:    stores,
@@ -19,8 +24,8 @@ func NewClient(ctx context.Context, version config.Version, stores ...config.Sto
 	}
 
 	// TODO: parallel check
-	for _, store := range stores {
-		variables, err := store.VariableList(ctx, version)
+	for _, s := range stores {
+		variables, err := s.VariableList(ctx, version)
 		if err != nil {
 			return nil, err
 		}

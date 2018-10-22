@@ -2,11 +2,16 @@ package etcd
 
 import (
 	"context"
+	"strconv"
+
 	rc "github.com/kihamo/runtime-config"
 	"github.com/kihamo/runtime-config/config"
 	"github.com/pkg/errors"
 	"go.etcd.io/etcd/clientv3"
-	"strconv"
+)
+
+const (
+	keyPrefix = "/config/"
 )
 
 type Store struct {
@@ -23,17 +28,24 @@ func (s *Store) VersionList(context.Context) ([]config.Version, error) {
 	return nil, config.ErrorNotImplemented
 }
 
-func (s *Store) VersionCreate(context.Context, config.Version) error {
-	return config.ErrorNotImplemented
+func (s *Store) VersionCreate(ctx context.Context, version config.Version) error {
+	key, err := getVersionKey(version.ProjectID(), version.ID())
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.Put(ctx, key, "")
+
+	return err
 }
 
 func (s *Store) VersionRead(ctx context.Context, version config.Version) (config.Version, error) {
-	path, err := getPathForVersion(version.ProjectID(), version.ID())
+	key, err := getVersionKey(version.ProjectID(), version.ID())
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := s.client.Get(ctx, path)
+	response, err := s.client.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -58,12 +70,12 @@ func (s *Store) VersionSetChangeCallback(func(config.Version, config.Version)) {
 }
 
 func (s *Store) VariableList(ctx context.Context, version config.Version) ([]config.Variable, error) {
-	path, err := getPathForVersion(version.ProjectID(), version.ID())
+	key, err := getVersionKey(version.ProjectID(), version.ID())
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := s.client.Get(ctx, path)
+	response, err := s.client.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -82,12 +94,12 @@ func (s *Store) VariableCreate(context.Context, config.Version, config.Variable)
 }
 
 func (s *Store) VariableRead(ctx context.Context, version config.Version, variable config.Variable) (config.Variable, error) {
-	path, err := getPathForVariable(version.ProjectID(), version.ID(), variable.Name())
+	key, err := getVariableKey(version.ProjectID(), version.ID(), variable.Name())
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := s.client.Get(ctx, path)
+	response, err := s.client.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +126,7 @@ func (s *Store) VariableSetKeyChangeCallback(func(config.Value, config.Value)) {
 
 }
 
-func getPathForVersion(projectID uint64, versionID string) (string, error) {
+func getVersionKey(projectID uint64, versionID string) (string, error) {
 	if projectID == 0 {
 		return "", errors.New("Project ID is zero")
 	}
@@ -123,15 +135,15 @@ func getPathForVersion(projectID uint64, versionID string) (string, error) {
 		return "", errors.New("Version ID is empty")
 	}
 
-	return "/config/" + strconv.FormatUint(projectID, 10) + "/" + versionID, nil
+	return keyPrefix + strconv.FormatUint(projectID, 10) + "/" + versionID, nil
 }
 
-func getPathForVariable(projectID uint64, versionID, variableName string) (string, error) {
+func getVariableKey(projectID uint64, versionID, variableName string) (string, error) {
 	if variableName == "" {
 		return "", errors.New("Variable name is empty")
 	}
 
-	pathVersion, err := getPathForVersion(projectID, versionID)
+	pathVersion, err := getVersionKey(projectID, versionID)
 	if err != nil {
 		return "", err
 	}

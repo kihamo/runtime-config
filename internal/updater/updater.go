@@ -3,18 +3,28 @@ package updater
 import (
 	"context"
 	"fmt"
+
 	"github.com/kihamo/runtime-config/config"
+	"github.com/kihamo/runtime-config/internal/store"
 )
 
 type Updater struct {
 	version config.Version
-	store   config.Store
+	store   store.Store
 }
 
-func NewUpdater(ctx context.Context, version config.Version, store config.Store) (*Updater, error) {
+func NewUpdater(ctx context.Context, version config.Version, store store.Store) (*Updater, error) {
 	v, err := store.VersionRead(ctx, version)
 	if err != nil {
-		return nil, err
+		if err != config.ErrorVersionNotFound {
+			return nil, err
+		}
+
+		if err = store.VersionCreate(ctx, version); err != nil {
+			return nil, err
+		}
+
+		v = version
 	}
 
 	u := &Updater{
