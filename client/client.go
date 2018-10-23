@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 
 	"github.com/kihamo/runtime-config/config"
 	"github.com/kihamo/runtime-config/internal"
@@ -22,6 +23,10 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, version config.Version, stores ...Store) (*Client, error) {
+	if len(stores) == 0 {
+		return nil, errors.New("Stores isn't set")
+	}
+
 	c := &Client{
 		version:   version,
 		stores:    stores,
@@ -44,8 +49,30 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 }
 
 func (c *Client) Variables(ctx context.Context) ([]config.Variable, error) {
-	// TODO: merge
-	return c.stores[0].Variables(ctx, c.version)
+	tmp := make(map[string]config.Variable)
+	totalStoresCount := len(c.stores) - 1
+
+	for i := totalStoresCount; i >= 0; i-- {
+		storeVariables, err := c.stores[i].Variables(ctx, c.version)
+		if err != nil {
+			return nil, err
+		}
+
+		if totalStoresCount == 0 {
+			return storeVariables, nil
+		}
+
+		for _, variable := range storeVariables {
+			tmp[variable.Name()] = variable
+		}
+	}
+
+	variables := make([]config.Variable, 0, len(tmp))
+	for _, variable := range tmp {
+		variables = append(variables, variable)
+	}
+
+	return variables, nil
 }
 
 func (c *Client) GetVariable(ctx context.Context, name string) (config.Variable, error) {
