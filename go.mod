@@ -12,6 +12,7 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20180924190550-6f2cf27854a4 // indirect
+	github.com/golang/mock v1.1.1
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0 // indirect
