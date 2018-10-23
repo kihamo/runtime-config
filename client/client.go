@@ -17,9 +17,8 @@ type Store interface {
 }
 
 type Client struct {
-	version   config.Version
-	stores    []Store
-	variables map[string]config.Variable
+	version config.Version
+	stores  []Store
 }
 
 func NewClient(ctx context.Context, version config.Version, stores ...Store) (*Client, error) {
@@ -28,21 +27,8 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 	}
 
 	c := &Client{
-		version:   version,
-		stores:    stores,
-		variables: make(map[string]config.Variable),
-	}
-
-	// TODO: parallel check with priority
-	for _, s := range stores {
-		variables, err := s.Variables(ctx, version)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, variable := range variables {
-			c.variables[variable.Name()] = variable
-		}
+		version: version,
+		stores:  stores,
 	}
 
 	return c, nil
