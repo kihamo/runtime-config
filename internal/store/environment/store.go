@@ -27,7 +27,7 @@ func NewStore(prefix string) *Store {
 }
 
 func (s *Store) Versions(context.Context) ([]config.Version, error) {
-	return nil, config.ErrorNotImplemented
+	return nil, config.ErrNotImplemented
 }
 
 func (s *Store) read(version config.Version) {
@@ -90,7 +90,7 @@ func (s *Store) VariableRead(ctx context.Context, version config.Version, variab
 		}
 	}
 
-	return variable, config.ErrorVariableNotFound
+	return variable, config.ErrVariableNotFound
 }
 
 func (s *Store) VariableUpdate(ctx context.Context, version config.Version, variable config.Variable) error {
@@ -106,7 +106,7 @@ func (s *Store) VariableUpdate(ctx context.Context, version config.Version, vari
 		}
 	}
 
-	return config.ErrorVariableNotFound
+	return config.ErrVariableNotFound
 }
 
 func (s *Store) VariableDelete(ctx context.Context, version config.Version, variable config.Variable) error {
@@ -125,13 +125,13 @@ func (s *Store) VariableDelete(ctx context.Context, version config.Version, vari
 }
 
 func (s *Store) SetVersionChangeCallback(config.VersionChangeCallback) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }

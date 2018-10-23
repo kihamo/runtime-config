@@ -26,7 +26,7 @@ func NewStore(client *clientv3.Client) *Store {
 }
 
 func (s *Store) Versions(context.Context) ([]config.Version, error) {
-	return nil, config.ErrorNotImplemented
+	return nil, config.ErrNotImplemented
 }
 
 func (s *Store) Variables(ctx context.Context, version config.Version) ([]config.Variable, error) {
@@ -50,7 +50,7 @@ func (s *Store) Variables(ctx context.Context, version config.Version) ([]config
 }
 
 func (s *Store) VariableCreate(context.Context, config.Version, config.Variable) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) VariableRead(ctx context.Context, version config.Version, variable config.Variable) (config.Variable, error) {
@@ -65,30 +65,30 @@ func (s *Store) VariableRead(ctx context.Context, version config.Version, variab
 	}
 
 	if response.Count == 0 {
-		return nil, config.ErrorVariableNotFound
+		return nil, config.ErrVariableNotFound
 	}
 
 	return variable, err
 }
 
 func (s *Store) VariableUpdate(context.Context, config.Version, config.Variable) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) VariableDelete(context.Context, config.Version, config.Variable) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) SetVersionChangeCallback(config.VersionChangeCallback) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func (s *Store) SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error {
-	return config.ErrorNotImplemented
+	return config.ErrNotImplemented
 }
 
 func getVersionKey(projectID, versionID string) (string, error) {

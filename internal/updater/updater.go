@@ -30,9 +30,9 @@ func (u *Updater) AddVariable(ctx context.Context, variable config.Variable) err
 	fmt.Println(variable, err)
 
 	if err != nil {
-		fmt.Println(err, config.ErrorVariableNotFound)
+		fmt.Println(err, config.ErrVariableNotFound)
 
-		if err != config.ErrorVariableNotFound {
+		if err != config.ErrVariableNotFound {
 			return err
 		}
 

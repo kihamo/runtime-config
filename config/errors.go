@@ -5,19 +5,19 @@ import (
 )
 
 var (
-	ErrorNotImplemented   = errors.New("Not implemented")
-	ErrorVersionNotFound  = errors.New("Version not found")
-	ErrorVariableNotFound = errors.New("Variable not found")
+	ErrNotImplemented   = errors.New("Not implemented")
+	ErrVersionNotFound  = errors.New("Version not found")
+	ErrVariableNotFound = errors.New("Variable not found")
 )
 
 func IsNotImplemented(err error) bool {
-	return err == ErrorNotImplemented
+	return err == ErrNotImplemented
 }
 
 func IsVersionNotFound(err error) bool {
-	return err == ErrorVersionNotFound
+	return err == ErrVersionNotFound
 }
 
 func IsVariableNotFound(err error) bool {
-	return err == ErrorVariableNotFound
+	return err == ErrVariableNotFound
 }

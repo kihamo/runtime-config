@@ -64,7 +64,7 @@ func (c *Client) Value(ctx context.Context, name string) (config.Value, error) {
 		return variable.Value(), err
 	}
 
-	return nil, config.ErrorVariableNotFound
+	return nil, config.ErrVariableNotFound
 }
 
 func (c *Client) SetVersionChangeCallback(callback config.VersionChangeCallback) error {
