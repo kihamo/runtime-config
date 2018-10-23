@@ -5,6 +5,8 @@ import (
 )
 
 type Value interface {
+	IsNil() bool
+
 	Bool() bool
 	MaybeBool() (bool, error)
 

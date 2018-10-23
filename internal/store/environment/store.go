@@ -45,7 +45,13 @@ func (s *Store) read(version config.Version) {
 		key := strings.ToUpper(pair[0])
 
 		if strings.HasPrefix(key, prefix) {
-			variables[strings.ToUpper(pair[0][skipSymbols:])] = internal.NewVariable(pair[0][skipSymbols:], pair[1])
+			var value interface{}
+			if pair[1] != "" {
+				value = pair[1]
+			}
+
+			key := pair[0][skipSymbols:]
+			variables[strings.ToUpper(key)] = internal.NewVariable(key, value)
 		}
 	}
 

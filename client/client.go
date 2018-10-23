@@ -34,34 +34,24 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 	return c, nil
 }
 
-func (c *Client) Variables(ctx context.Context) ([]config.Variable, error) {
-	tmp := make(map[string]config.Variable)
-	totalStoresCount := len(c.stores) - 1
+func (c *Client) Values(ctx context.Context) (map[string]config.Value, error) {
+	values := make(map[string]config.Value)
 
-	for i := totalStoresCount; i >= 0; i-- {
+	for i := len(c.stores) - 1; i >= 0; i-- {
 		storeVariables, err := c.stores[i].Variables(ctx, c.version)
 		if err != nil {
 			return nil, err
 		}
 
-		if totalStoresCount == 0 {
-			return storeVariables, nil
-		}
-
 		for _, variable := range storeVariables {
-			tmp[variable.Name()] = variable
+			values[variable.Name()] = variable.Value()
 		}
 	}
 
-	variables := make([]config.Variable, 0, len(tmp))
-	for _, variable := range tmp {
-		variables = append(variables, variable)
-	}
-
-	return variables, nil
+	return values, nil
 }
 
-func (c *Client) GetVariable(ctx context.Context, name string) (config.Variable, error) {
+func (c *Client) Value(ctx context.Context, name string) (config.Value, error) {
 	v := internal.NewVariable(name, nil)
 
 	for _, store := range c.stores {
@@ -71,7 +61,7 @@ func (c *Client) GetVariable(ctx context.Context, name string) (config.Variable,
 			continue
 		}
 
-		return variable, err
+		return variable.Value(), err
 	}
 
 	return nil, config.ErrorVariableNotFound
@@ -99,7 +89,7 @@ func (c *Client) SetVariableChangeCallback(callback config.VariableChangeCallbac
 	return nil
 }
 
-func (c *Client) SetVariableChangeByNameCallback(name string, callback func(config.Variable, config.Value, config.Value)) error {
+func (c *Client) SetVariableChangeByNameCallback(name string, callback config.VariableChangeCallback) error {
 	for _, store := range c.stores {
 		err := store.SetVariableChangeByNameCallback(c.version, name, callback)
 		if err != nil && !config.IsNotImplemented(err) {

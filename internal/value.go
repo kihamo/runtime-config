@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -14,13 +16,27 @@ func NewValue(v interface{}) value {
 	}
 }
 
+func (v value) IsNil() bool {
+	return v.value == nil
+}
+
 func (v value) Bool() bool {
 	val, _ := v.MaybeBool()
 	return val
 }
 
 func (v value) MaybeBool() (bool, error) {
-	return false, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return false, err
+	}
+
+	val, err := strconv.ParseBool(raw)
+	if err != nil {
+		return false, fmt.Errorf("value cannot be parsed as bool: %s", err)
+	}
+
+	return val, nil
 }
 
 func (v value) Int() int {
@@ -29,7 +45,17 @@ func (v value) Int() int {
 }
 
 func (v value) MaybeInt() (int, error) {
-	return -1, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return 0, err
+	}
+
+	val, err := strconv.Atoi(raw)
+	if err != nil {
+		return 0, fmt.Errorf("value cannot be parsed as int: %s", err)
+	}
+
+	return val, nil
 }
 
 func (v value) Int64() int64 {
@@ -38,7 +64,17 @@ func (v value) Int64() int64 {
 }
 
 func (v value) MaybeInt64() (int64, error) {
-	return -1, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return 0, err
+	}
+
+	val, err := strconv.ParseInt(raw, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("value cannot be parsed as int64: %s", err)
+	}
+
+	return val, nil
 }
 
 func (v value) Uint() uint {
@@ -47,7 +83,17 @@ func (v value) Uint() uint {
 }
 
 func (v value) MaybeUint() (uint, error) {
-	return 0, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return 0, err
+	}
+
+	val, err := strconv.ParseUint(raw, 10, 32)
+	if err != nil {
+		return 0, fmt.Errorf("value cannot be parsed as uint: %s", err)
+	}
+
+	return uint(val), nil
 }
 
 func (v value) Uint64() uint64 {
@@ -56,7 +102,17 @@ func (v value) Uint64() uint64 {
 }
 
 func (v value) MaybeUint64() (uint64, error) {
-	return 0, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return 0, err
+	}
+
+	val, err := strconv.ParseUint(raw, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("value cannot be parsed as uint64: %s", err)
+	}
+
+	return val, nil
 }
 
 func (v value) Float64() float64 {
@@ -65,7 +121,17 @@ func (v value) Float64() float64 {
 }
 
 func (v value) MaybeFloat64() (float64, error) {
-	return -1, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return 0, err
+	}
+
+	val, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return 0, fmt.Errorf("value cannot be parsed as float64: %s", err)
+	}
+
+	return val, nil
 }
 
 func (v value) Duration() time.Duration {
@@ -74,7 +140,17 @@ func (v value) Duration() time.Duration {
 }
 
 func (v value) MaybeDuration() (time.Duration, error) {
-	return 0, nil
+	raw, err := v.MaybeString()
+	if err != nil {
+		return 0, err
+	}
+
+	val, err := time.ParseDuration(raw)
+	if err != nil {
+		return 0, fmt.Errorf("value cannot be parsed as duration: %s", err)
+	}
+
+	return val, nil
 }
 
 func (v value) String() string {
@@ -83,5 +159,13 @@ func (v value) String() string {
 }
 
 func (v value) MaybeString() (string, error) {
-	return "", nil
+	if v.IsNil() {
+		return "", nil
+	}
+
+	return fmt.Sprintf("%s", v.value), nil
+}
+
+func (v value) GoString() string {
+	return v.String()
 }

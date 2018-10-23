@@ -38,6 +38,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println(clientConfig.Variables(ctx))
-	fmt.Println(clientConfig.GetVariable(ctx, "tEst"))
+	fmt.Println(clientConfig.Values(ctx))
+
+	val, err := clientConfig.Value(ctx, "tEst")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	fmt.Println(val.String(), val.IsNil())
 }
