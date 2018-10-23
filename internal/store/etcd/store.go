@@ -13,10 +13,12 @@ const (
 	keyPrefix = "/config/"
 )
 
+// Store implements
 type Store struct {
 	client *clientv3.Client
 }
 
+// NewStore creates new instance of Store
 func NewStore(client *clientv3.Client) *Store {
 	return &Store{
 		client: client,
@@ -91,11 +93,11 @@ func (s *Store) SetVariableChangeByNameCallback(config.Version, string, config.V
 
 func getVersionKey(projectID, versionID string) (string, error) {
 	if projectID == "" {
-		return "", errors.New("Project ID is empty")
+		return "", errors.New("project ID is empty")
 	}
 
 	if versionID == "" {
-		return "", errors.New("Version ID is empty")
+		return "", errors.New("version ID is empty")
 	}
 
 	return keyPrefix + projectID + "/" + versionID, nil
@@ -103,7 +105,7 @@ func getVersionKey(projectID, versionID string) (string, error) {
 
 func getVariableKey(projectID, versionID, variableName string) (string, error) {
 	if variableName == "" {
-		return "", errors.New("Variable name is empty")
+		return "", errors.New("variable name is empty")
 	}
 
 	pathVersion, err := getVersionKey(projectID, versionID)

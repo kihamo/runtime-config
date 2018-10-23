@@ -6,6 +6,7 @@ import (
 	"github.com/kihamo/runtime-config/config"
 )
 
+// Store interface describes storage provider for configs
 type Store interface {
 	Versions(context.Context) ([]config.Version, error)
 	Variables(context.Context, config.Version) ([]config.Variable, error)
