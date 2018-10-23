@@ -2,7 +2,6 @@ package environment
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 
@@ -38,7 +37,7 @@ func (s *Store) read(version config.Version) {
 
 	envs := os.Environ()
 	variables := make(map[string]config.Variable, len(envs))
-	prefix := s.getVariableKeyPrefix(version.ProjectID())
+	prefix := s.prefix + strings.ToUpper(version.ProjectID()) + spaceSeparator
 	skipSymbols := len(prefix)
 
 	for _, v := range envs {
@@ -64,32 +63,59 @@ func (s *Store) Variables(ctx context.Context, version config.Version) ([]config
 	return variables, nil
 }
 
-func (s *Store) VariableCreate(context.Context, config.Version, config.Variable) error {
-	return config.ErrorNotImplemented
+func (s *Store) VariableCreate(ctx context.Context, version config.Version, variable config.Variable) error {
+	s.read(version)
+	projectKey := version.ProjectID()
+
+	if _, ok := s.variables[projectKey]; ok {
+		s.variables[projectKey] = make(map[string]config.Variable, 1)
+	}
+
+	s.variables[projectKey][strings.ToUpper(variable.Name())] = variable
+	return nil
 }
 
 func (s *Store) VariableRead(ctx context.Context, version config.Version, variable config.Variable) (config.Variable, error) {
 	s.read(version)
 
-	name := strings.ToUpper(variable.Name())
-
-	fmt.Println(name, s.variables[version.ProjectID()])
-
-	variable, ok := s.variables[version.ProjectID()][name]
-
-	if !ok {
-		return nil, config.ErrorVariableNotFound
+	if list, ok := s.variables[version.ProjectID()]; ok {
+		if variable, ok := list[strings.ToUpper(variable.Name())]; ok {
+			return variable, nil
+		}
 	}
 
-	return variable, nil
+	return variable, config.ErrorVariableNotFound
 }
 
-func (s *Store) VariableUpdate(context.Context, config.Version, config.Variable) error {
-	return config.ErrorNotImplemented
+func (s *Store) VariableUpdate(ctx context.Context, version config.Version, variable config.Variable) error {
+	s.read(version)
+	projectKey := version.ProjectID()
+
+	if list, ok := s.variables[projectKey]; ok {
+		variableKey := strings.ToUpper(variable.Name())
+
+		if _, ok = list[variableKey]; ok {
+			s.variables[projectKey][variableKey] = variable
+			return nil
+		}
+	}
+
+	return config.ErrorVariableNotFound
 }
 
-func (s *Store) VariableDelete(context.Context, config.Version, config.Variable) error {
-	return config.ErrorNotImplemented
+func (s *Store) VariableDelete(ctx context.Context, version config.Version, variable config.Variable) error {
+	s.read(version)
+	projectKey := version.ProjectID()
+
+	if list, ok := s.variables[projectKey]; ok {
+		variableKey := strings.ToUpper(variable.Name())
+
+		if _, ok = list[variableKey]; ok {
+			delete(s.variables[projectKey], variableKey)
+		}
+	}
+
+	return nil
 }
 
 func (s *Store) SetVersionChangeCallback(config.VersionChangeCallback) error {
@@ -102,8 +128,4 @@ func (s *Store) SetVariableChangeCallback(config.Version, config.VariableChangeC
 
 func (s *Store) SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error {
 	return config.ErrorNotImplemented
-}
-
-func (s *Store) getVariableKeyPrefix(projectID string) string {
-	return s.prefix + strings.ToUpper(projectID) + spaceSeparator
 }
