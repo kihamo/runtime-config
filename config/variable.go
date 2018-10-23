@@ -1,7 +1,5 @@
 package config
 
-//go:generate mockgen -destination=./mocks/mock_variable.go -package=mocks github.com/kihamo/runtime-config/config Variable
-
 type VariableType int64
 
 const (

@@ -6,10 +6,9 @@ package mocks
 
 import (
 	context "context"
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	config "github.com/kihamo/runtime-config/config"
+	reflect "reflect"
 )
 
 // MockStore is a mock of Store interface
@@ -134,14 +133,14 @@ func (mr *MockStoreMockRecorder) Variables(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Versions mocks base method
-func (m *MockStore) Versions(arg0 context.Context) ([]config.Version, error) {
-	ret := m.ctrl.Call(m, "Versions", arg0)
+func (m *MockStore) Versions(arg0 context.Context, arg1 string) ([]config.Version, error) {
+	ret := m.ctrl.Call(m, "Versions", arg0, arg1)
 	ret0, _ := ret[0].([]config.Version)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Versions indicates an expected call of Versions
-func (mr *MockStoreMockRecorder) Versions(arg0 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Versions", reflect.TypeOf((*MockStore)(nil).Versions), arg0)
+func (mr *MockStoreMockRecorder) Versions(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Versions", reflect.TypeOf((*MockStore)(nil).Versions), arg0, arg1)
 }

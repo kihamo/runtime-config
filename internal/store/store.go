@@ -1,7 +1,5 @@
 package store
 
-//go:generate mockgen -destination=./mocks/mock_store.go -package=mocks github.com/kihamo/runtime-config/internal/store Store
-
 import (
 	"context"
 
