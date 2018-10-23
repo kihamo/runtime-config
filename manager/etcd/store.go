@@ -1,7 +1,7 @@
 package etcd
 
 import (
-	"github.com/etcd-io/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3"
 	"github.com/kihamo/runtime-config/internal/store/etcd"
 	"github.com/kihamo/runtime-config/manager"
 )
