@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"go.etcd.io/etcd/clientv3"
 	"github.com/kihamo/runtime-config/internal"
 	"github.com/kihamo/runtime-config/internal/store/etcd"
 	"github.com/kihamo/runtime-config/internal/updater"
+	"go.etcd.io/etcd/clientv3"
 )
 
 const (

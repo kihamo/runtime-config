@@ -11,22 +11,21 @@ import (
 type Store interface {
 	Variables(context.Context, config.Version) ([]config.Variable, error)
 	VariableRead(ctx context.Context, version config.Version, variable config.Variable) (config.Variable, error)
-	SetVersionChangeCallback(config.VersionChangeCallback) error
 	SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error
 	SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error
 }
 
-type Client struct {
+type client struct {
 	version config.Version
 	stores  []Store
 }
 
-func NewClient(ctx context.Context, version config.Version, stores ...Store) (*Client, error) {
+func NewClient(ctx context.Context, version config.Version, stores ...Store) (*client, error) {
 	if len(stores) == 0 {
 		return nil, errors.New("Stores isn't set")
 	}
 
-	c := &Client{
+	c := &client{
 		version: version,
 		stores:  stores,
 	}
@@ -34,7 +33,7 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 	return c, nil
 }
 
-func (c *Client) Values(ctx context.Context) (map[string]config.Value, error) {
+func (c *client) Values(ctx context.Context) (map[string]config.Value, error) {
 	values := make(map[string]config.Value)
 
 	for i := len(c.stores) - 1; i >= 0; i-- {
@@ -51,7 +50,7 @@ func (c *Client) Values(ctx context.Context) (map[string]config.Value, error) {
 	return values, nil
 }
 
-func (c *Client) Value(ctx context.Context, name string) (config.Value, error) {
+func (c *client) Value(ctx context.Context, name string) (config.Value, error) {
 	v := internal.NewVariable(name, nil)
 
 	for _, store := range c.stores {
@@ -67,18 +66,7 @@ func (c *Client) Value(ctx context.Context, name string) (config.Value, error) {
 	return nil, config.ErrorVariableNotFound
 }
 
-func (c *Client) SetVersionChangeCallback(callback config.VersionChangeCallback) error {
-	for _, store := range c.stores {
-		err := store.SetVersionChangeCallback(callback)
-		if err != nil && !config.IsNotImplemented(err) {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (c *Client) SetVariableChangeCallback(callback config.VariableChangeCallback) error {
+func (c *client) SetVariableChangeCallback(callback config.VariableChangeCallback) error {
 	for _, store := range c.stores {
 		err := store.SetVariableChangeCallback(c.version, callback)
 		if err != nil && !config.IsNotImplemented(err) {
@@ -89,7 +77,7 @@ func (c *Client) SetVariableChangeCallback(callback config.VariableChangeCallbac
 	return nil
 }
 
-func (c *Client) SetVariableChangeByNameCallback(name string, callback config.VariableChangeCallback) error {
+func (c *client) SetVariableChangeByNameCallback(name string, callback config.VariableChangeCallback) error {
 	for _, store := range c.stores {
 		err := store.SetVariableChangeByNameCallback(c.version, name, callback)
 		if err != nil && !config.IsNotImplemented(err) {
