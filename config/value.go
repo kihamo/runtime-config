@@ -1,7 +1,5 @@
 package config
 
-//go:generate mockgen -destination=./mocks/mock_value.go -package=mocks github.com/kihamo/runtime-config/config Value
-
 import (
 	"time"
 )
