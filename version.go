@@ -2,10 +2,10 @@ package config
 
 type Version struct {
 	versionID string
-	projectID uint64
+	projectID string
 }
 
-func NewVersion(projectId uint64, id string) Version {
+func NewVersion(projectId, id string) Version {
 	return Version{
 		versionID: id,
 		projectID: projectId,
@@ -16,6 +16,6 @@ func (v Version) ID() string {
 	return v.versionID
 }
 
-func (v Version) ProjectID() uint64 {
+func (v Version) ProjectID() string {
 	return v.projectID
 }

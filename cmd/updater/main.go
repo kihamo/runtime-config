@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/kihamo/runtime-config"
@@ -28,7 +29,7 @@ func main() {
 
 	storeEtcd := etcd.NewStore(clientEtcd)
 
-	updaterConfig, err := updater.NewUpdater(context.Background(), config.NewVersion(ProjectID, VersionId), storeEtcd)
+	updaterConfig, err := updater.NewUpdater(context.Background(), config.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId), storeEtcd)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

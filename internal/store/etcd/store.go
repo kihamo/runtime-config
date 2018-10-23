@@ -2,7 +2,6 @@ package etcd
 
 import (
 	"context"
-	"strconv"
 
 	rc "github.com/kihamo/runtime-config"
 	"github.com/kihamo/runtime-config/config"
@@ -82,27 +81,27 @@ func (s *Store) SetVersionChangeCallback(config.VersionChangeCallback) error {
 	return config.ErrorNotImplemented
 }
 
-func (s *Store) SetVariableChangeCallback(config.VariableChangeCallback) error {
+func (s *Store) SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error {
 	return config.ErrorNotImplemented
 }
 
-func (s *Store) SetVariableChangeByNameCallback(string, config.VariableChangeCallback) error {
+func (s *Store) SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error {
 	return config.ErrorNotImplemented
 }
 
-func getVersionKey(projectID uint64, versionID string) (string, error) {
-	if projectID == 0 {
-		return "", errors.New("Project ID is zero")
+func getVersionKey(projectID, versionID string) (string, error) {
+	if projectID == "" {
+		return "", errors.New("Project ID is empty")
 	}
 
 	if versionID == "" {
 		return "", errors.New("Version ID is empty")
 	}
 
-	return keyPrefix + strconv.FormatUint(projectID, 10) + "/" + versionID, nil
+	return keyPrefix + projectID + "/" + versionID, nil
 }
 
-func getVariableKey(projectID uint64, versionID, variableName string) (string, error) {
+func getVariableKey(projectID, versionID, variableName string) (string, error) {
 	if variableName == "" {
 		return "", errors.New("Variable name is empty")
 	}

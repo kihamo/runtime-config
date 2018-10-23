@@ -14,6 +14,6 @@ type Store interface {
 	VariableUpdate(context.Context, config.Version, config.Variable) error
 	VariableDelete(context.Context, config.Version, config.Variable) error
 	SetVersionChangeCallback(config.VersionChangeCallback) error
-	SetVariableChangeCallback(config.VariableChangeCallback) error
-	SetVariableChangeByNameCallback(string, config.VariableChangeCallback) error
+	SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error
+	SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error
 }

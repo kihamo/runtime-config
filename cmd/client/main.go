@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
+	"strconv"
 
 	"github.com/kihamo/runtime-config"
 	"github.com/kihamo/runtime-config/client"
-	"github.com/kihamo/runtime-config/internal/store/etcd"
-	"go.etcd.io/etcd/clientv3"
+	"github.com/kihamo/runtime-config/client/environment"
 )
 
 const (
@@ -19,19 +18,31 @@ const (
 )
 
 func main() {
-	clientEtcd, err := clientv3.New(clientv3.Config{
-		Endpoints: strings.Split(Endpoints, ";"),
-	})
+	ctx := context.Background()
+	version := config.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId)
+
+	/*
+		clientEtcd, err := clientv3.New(clientv3.Config{
+			Endpoints: strings.Split(Endpoints, ";"),
+		})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		storeEtcd := etcd.NewStore(clientEtcd)
+	*/
+	storeEnv := environment.NewStore("config_")
+
+	clientConfig, err := client.NewClient(ctx, version, storeEnv)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	storeEtcd := etcd.NewStore(clientEtcd)
-
-	clientConfig, err := client.NewClient(context.Background(), config.NewVersion(ProjectID, VersionId), storeEtcd)
+	variables, err := clientConfig.Variables(ctx)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf("Get variables failed with error %s", err.Error())
 	}
+	fmt.Println(variables)
 
-	fmt.Println(clientConfig)
+	fmt.Println(clientConfig.GetVariable(ctx, "tEst"))
 }
