@@ -3,10 +3,10 @@ package etcd
 import (
 	"context"
 
-	"github.com/etcd-io/etcd/clientv3"
 	"github.com/kihamo/runtime-config/config"
 	"github.com/kihamo/runtime-config/internal"
 	"github.com/pkg/errors"
+	"go.etcd.io/etcd/clientv3"
 )
 
 const (
