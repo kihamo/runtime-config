@@ -6,9 +6,10 @@ package mocks
 
 import (
 	context "context"
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	config "github.com/kihamo/runtime-config/config"
-	reflect "reflect"
 )
 
 // MockStore is a mock of Store interface

@@ -10,7 +10,7 @@ import (
 
 // Store interface describes storage provider for configs
 type Store interface {
-	Versions(context.Context) ([]config.Version, error)
+	Versions(context.Context, string) ([]config.Version, error)
 	Variables(context.Context, config.Version) ([]config.Variable, error)
 	VariableCreate(context.Context, config.Version, config.Variable) error
 	VariableRead(context.Context, config.Version, config.Variable) (config.Variable, error)

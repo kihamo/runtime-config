@@ -16,11 +16,11 @@ func NewManager(store Store) *manager {
 	}
 }
 
-func (m *manager) Versions(ctx context.Context) ([]config.Version, error) {
-	return m.store.Versions(ctx)
+func (m *manager) Versions(ctx context.Context, projectID string) ([]config.Version, error) {
+	return m.store.Versions(ctx, projectID)
 }
 
-func (m *manager) VersionCurrent(ctx context.Context) (config.Version, error) {
+func (m *manager) VersionCurrent(ctx context.Context, projectID string) (config.Version, error) {
 	return nil, nil
 }
 

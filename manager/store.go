@@ -9,7 +9,7 @@ import (
 )
 
 type Store interface {
-	Versions(context.Context) ([]config.Version, error)
+	Versions(context.Context, string) ([]config.Version, error)
 	Variables(context.Context, config.Version) ([]config.Variable, error)
 	SetVersionChangeCallback(config.VersionChangeCallback) error
 	SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error

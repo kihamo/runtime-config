@@ -58,7 +58,7 @@ func NewEtcdClient(c *Config) (*clientv3.Client, error) {
 	return etcdClient, nil
 }
 
-func (s *Store) Versions(context.Context) ([]config.Version, error) {
+func (s *Store) Versions(context.Context, string) ([]config.Version, error) {
 	return nil, config.ErrNotImplemented
 }
 

@@ -5,9 +5,10 @@
 package mocks
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	config "github.com/kihamo/runtime-config/config"
-	reflect "reflect"
 )
 
 // MockVariable is a mock of Variable interface
