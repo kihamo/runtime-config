@@ -6,14 +6,6 @@ import (
 	"github.com/kihamo/runtime-config/config"
 )
 
-type Store interface {
-	Versions(context.Context) ([]config.Version, error)
-	Variables(context.Context, config.Version) ([]config.Variable, error)
-	SetVersionChangeCallback(config.VersionChangeCallback) error
-	SetVariableChangeCallback(config.Version, config.VariableChangeCallback) error
-	SetVariableChangeByNameCallback(config.Version, string, config.VariableChangeCallback) error
-}
-
 type manager struct {
 	store Store
 }
@@ -32,19 +24,8 @@ func (m *manager) VersionCurrent(ctx context.Context) (config.Version, error) {
 	return nil, nil
 }
 
-func (m *manager) Values(ctx context.Context, version config.Version) (map[string]config.Value, error) {
-	storeVariables, err := m.store.Variables(ctx, version)
-	if err != nil {
-		return nil, err
-	}
-
-	values := make(map[string]config.Value, len(storeVariables))
-
-	for _, variable := range storeVariables {
-		values[variable.Name()] = variable.Value()
-	}
-
-	return values, nil
+func (m *manager) Variables(ctx context.Context, version config.Version) ([]config.Variable, error) {
+	return m.store.Variables(ctx, version)
 }
 
 func (m *manager) SetVersionChangeCallback(callback config.VersionChangeCallback) error {

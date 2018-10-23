@@ -34,5 +34,5 @@ func main() {
 
 	managerConfig := manager.NewManager(storeEtcd)
 
-	fmt.Println(managerConfig.Values(ctx, version))
+	fmt.Println(managerConfig.Variables(ctx, version))
 }
