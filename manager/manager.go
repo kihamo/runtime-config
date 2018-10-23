@@ -17,7 +17,7 @@ func NewManager(store Store) *manager {
 }
 
 func (m *manager) Versions(ctx context.Context) ([]config.Version, error) {
-	return m.Versions(ctx)
+	return m.store.Versions(ctx)
 }
 
 func (m *manager) VersionCurrent(ctx context.Context) (config.Version, error) {
