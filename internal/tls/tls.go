@@ -1,25 +1,24 @@
-package utils
+package tls
 
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
-
-	"github.com/pkg/errors"
 )
 
-// CreateTLSConfig sets up TLS config for usage with config providers
-func CreateTLSConfig(serviceCertFile, serviceKeyFile, caCertFile string) (*tls.Config, error) {
+// NewConfig sets up TLS config for usage with config providers
+func NewConfig(serviceCertFile, serviceKeyFile, caCertFile string) (*tls.Config, error) {
 	// Load client cert
 	serviceCert, err := tls.LoadX509KeyPair(serviceCertFile, serviceKeyFile)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to load X509 key pair")
+		return nil, fmt.Errorf("unable to load X509 key pair: %v", err)
 	}
 
 	// Load CA cert
 	caCert, err := ioutil.ReadFile(caCertFile)
 	if err != nil {
-		return nil, errors.Wrap(err, "unable to read CA certificate")
+		return nil, fmt.Errorf("unable to read CA certificate: %v", err)
 	}
 
 	// Create TLS config

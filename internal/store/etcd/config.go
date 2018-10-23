@@ -10,13 +10,13 @@ import (
 // DefaultTimeout is the default dial timeout
 const DefaultTimeout = 5 * time.Second
 
-// Config describes configuration for the etcd provider
+// Config is used for etcd client initialization
 type Config struct {
 	Endpoints   string
-	Timeout     time.Duration
 	ServiceCert string
 	ServiceKey  string
 	CACert      string
+	Timeout     time.Duration
 
 	tlsEnabled bool
 	tlsConfig  *tls.Config

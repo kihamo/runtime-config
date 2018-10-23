@@ -2,10 +2,12 @@ package etcd
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/kihamo/runtime-config/config"
 	"github.com/kihamo/runtime-config/internal"
-	"github.com/pkg/errors"
+	"github.com/kihamo/runtime-config/internal/tls"
 	"go.etcd.io/etcd/clientv3"
 )
 
@@ -18,11 +20,19 @@ type Store struct {
 	client *clientv3.Client
 }
 
-// NewStore creates new instance of Store
-func NewStore(client *clientv3.Client) *Store {
-	return &Store{
-		client: client,
+// NewStore creates new instance of Store from supplied config
+func NewStore(config *Config) (*Store, error) {
+	client, err := newEtcdClient(config)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create new etcd store: %v", err)
 	}
+
+	return &Store{client: client}, nil
+}
+
+// NewStoreFromClient creates new instance of Store with existing etcd client
+func NewStoreFromClient(client *clientv3.Client) *Store {
+	return &Store{client: client}
 }
 
 func (s *Store) Versions(context.Context) ([]config.Version, error) {
@@ -91,13 +101,46 @@ func (s *Store) SetVariableChangeByNameCallback(config.Version, string, config.V
 	return config.ErrNotImplemented
 }
 
+func newEtcdClient(c *Config) (*clientv3.Client, error) {
+	// Validate our config
+	if err := validateConfig(c); err != nil {
+		return nil, fmt.Errorf("unable to validate config: %v", err)
+	}
+
+	// Setup etcd config
+	c.setDefaults()
+	endpoints := strings.Split(c.Endpoints, ",")
+	etcdConfig := clientv3.Config{
+		Endpoints:   endpoints,
+		DialTimeout: c.Timeout,
+	}
+
+	// Create secure connection if certs were provided
+	if c.tlsEnabled {
+		tlsConfig, err := tls.NewConfig(c.ServiceCert, c.ServiceKey, c.CACert)
+		if err != nil {
+			return nil, fmt.Errorf("unable to create TLS config: %v", err)
+		}
+
+		etcdConfig.TLS = tlsConfig
+	}
+
+	// Setup client
+	etcdClient, err := clientv3.New(etcdConfig)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create new etcd client: %v", err)
+	}
+
+	return etcdClient, nil
+}
+
 func getVersionKey(projectID, versionID string) (string, error) {
 	if projectID == "" {
-		return "", errors.New("project ID is empty")
+		return "", fmt.Errorf("project ID is empty")
 	}
 
 	if versionID == "" {
-		return "", errors.New("version ID is empty")
+		return "", fmt.Errorf("version ID is empty")
 	}
 
 	return keyPrefix + projectID + "/" + versionID, nil
@@ -105,7 +148,7 @@ func getVersionKey(projectID, versionID string) (string, error) {
 
 func getVariableKey(projectID, versionID, variableName string) (string, error) {
 	if variableName == "" {
-		return "", errors.New("variable name is empty")
+		return "", fmt.Errorf("variable name is empty")
 	}
 
 	pathVersion, err := getVersionKey(projectID, versionID)
