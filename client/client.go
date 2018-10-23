@@ -13,13 +13,13 @@ type client struct {
 	stores  []Store
 }
 
-func NewClient(ctx context.Context, version config.Version, stores ...Store) (*client, error) {
+func NewClient(ctx context.Context, projectID, versionID string, stores ...Store) (*client, error) {
 	if len(stores) == 0 {
 		return nil, errors.New("Stores isn't set")
 	}
 
 	c := &client{
-		version: version,
+		version: internal.NewVersion(projectID, versionID),
 		stores:  stores,
 	}
 

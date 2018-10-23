@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kihamo/runtime-config/config"
+	"github.com/kihamo/runtime-config/internal"
 )
 
 type manager struct {
@@ -24,8 +25,8 @@ func (m *manager) VersionCurrent(ctx context.Context, projectID string) (config.
 	return nil, nil
 }
 
-func (m *manager) Variables(ctx context.Context, version config.Version) ([]config.Variable, error) {
-	return m.store.Variables(ctx, version)
+func (m *manager) Variables(ctx context.Context, projectID, versionID string) ([]config.Variable, error) {
+	return m.store.Variables(ctx, internal.NewVersion(projectID, versionID))
 }
 
 func (m *manager) SetVersionChangeCallback(callback config.VersionChangeCallback) error {
@@ -37,8 +38,8 @@ func (m *manager) SetVersionChangeCallback(callback config.VersionChangeCallback
 	return nil
 }
 
-func (m *manager) SetVariableChangeCallback(version config.Version, callback config.VariableChangeCallback) error {
-	err := m.store.SetVariableChangeCallback(version, callback)
+func (m *manager) SetVariableChangeCallback(projectID, versionID string, callback config.VariableChangeCallback) error {
+	err := m.store.SetVariableChangeCallback(internal.NewVersion(projectID, versionID), callback)
 	if err != nil && !config.IsNotImplemented(err) {
 		return err
 	}
@@ -46,8 +47,8 @@ func (m *manager) SetVariableChangeCallback(version config.Version, callback con
 	return nil
 }
 
-func (m *manager) SetVariableChangeByNameCallback(version config.Version, name string, callback config.VariableChangeCallback) error {
-	err := m.store.SetVariableChangeByNameCallback(version, name, callback)
+func (m *manager) SetVariableChangeByNameCallback(projectID, versionID string, name string, callback config.VariableChangeCallback) error {
+	err := m.store.SetVariableChangeByNameCallback(internal.NewVersion(projectID, versionID), name, callback)
 	if err != nil && !config.IsNotImplemented(err) {
 		return err
 	}

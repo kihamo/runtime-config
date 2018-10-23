@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kihamo/runtime-config/internal"
 	"github.com/kihamo/runtime-config/manager"
 	"github.com/kihamo/runtime-config/manager/etcd"
 	"go.etcd.io/etcd/clientv3"
@@ -21,7 +20,6 @@ const (
 
 func main() {
 	ctx := context.Background()
-	version := internal.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId)
 
 	clientEtcd, err := clientv3.New(clientv3.Config{
 		Endpoints: strings.Split(Endpoints, ";"),
@@ -34,5 +32,5 @@ func main() {
 
 	managerConfig := manager.NewManager(storeEtcd)
 
-	fmt.Println(managerConfig.Variables(ctx, version))
+	fmt.Println(managerConfig.Variables(ctx, strconv.FormatUint(ProjectID, 10), VersionId))
 }

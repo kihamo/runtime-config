@@ -8,7 +8,6 @@ import (
 
 	"github.com/kihamo/runtime-config/client"
 	"github.com/kihamo/runtime-config/client/environment"
-	"github.com/kihamo/runtime-config/internal"
 )
 
 const (
@@ -19,7 +18,6 @@ const (
 
 func main() {
 	ctx := context.Background()
-	version := internal.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId)
 
 	/*
 		clientEtcd, err := clientv3.New(clientv3.Config{
@@ -33,7 +31,7 @@ func main() {
 	*/
 	storeEnv := environment.NewStore("config_")
 
-	clientConfig, err := client.NewClient(ctx, version, storeEnv)
+	clientConfig, err := client.NewClient(ctx, strconv.FormatUint(ProjectID, 10), VersionId, storeEnv)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
