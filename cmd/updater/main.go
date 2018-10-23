@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kihamo/runtime-config"
+	"github.com/kihamo/runtime-config/internal"
 	"github.com/kihamo/runtime-config/internal/store/etcd"
 	"github.com/kihamo/runtime-config/internal/updater"
 	"go.etcd.io/etcd/clientv3"
@@ -29,14 +29,14 @@ func main() {
 
 	storeEtcd := etcd.NewStore(clientEtcd)
 
-	updaterConfig, err := updater.NewUpdater(context.Background(), config.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId), storeEtcd)
+	updaterConfig, err := updater.NewUpdater(context.Background(), internal.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId), storeEtcd)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	fmt.Println(updaterConfig)
 
-	variable := config.NewVariable("test", nil)
+	variable := internal.NewVariable("test", nil)
 	err = updaterConfig.AddVariable(context.Background(), variable)
 
 	fmt.Println(variable, err)

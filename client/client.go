@@ -3,9 +3,8 @@ package client
 import (
 	"context"
 
-	rc "github.com/kihamo/runtime-config"
-
 	"github.com/kihamo/runtime-config/config"
+	"github.com/kihamo/runtime-config/internal"
 )
 
 type Store interface {
@@ -29,7 +28,7 @@ func NewClient(ctx context.Context, version config.Version, stores ...Store) (*C
 		variables: make(map[string]config.Variable),
 	}
 
-	// TODO: parallel check
+	// TODO: parallel check with priority
 	for _, s := range stores {
 		variables, err := s.Variables(ctx, version)
 		if err != nil {
@@ -50,7 +49,7 @@ func (c *Client) Variables(ctx context.Context) ([]config.Variable, error) {
 }
 
 func (c *Client) GetVariable(ctx context.Context, name string) (config.Variable, error) {
-	v := rc.NewVariable(name, nil)
+	v := internal.NewVariable(name, nil)
 
 	for _, store := range c.stores {
 		variable, err := store.VariableRead(ctx, c.version, v)

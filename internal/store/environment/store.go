@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	rc "github.com/kihamo/runtime-config"
 	"github.com/kihamo/runtime-config/config"
+	"github.com/kihamo/runtime-config/internal"
 )
 
 const (
@@ -46,7 +46,7 @@ func (s *Store) read(version config.Version) {
 		key := strings.ToUpper(pair[0])
 
 		if strings.HasPrefix(key, prefix) {
-			variables[strings.ToUpper(pair[0][skipSymbols:])] = rc.NewVariable(pair[0][skipSymbols:], pair[1])
+			variables[strings.ToUpper(pair[0][skipSymbols:])] = internal.NewVariable(pair[0][skipSymbols:], pair[1])
 		}
 	}
 

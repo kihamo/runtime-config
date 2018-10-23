@@ -3,8 +3,8 @@ package etcd
 import (
 	"context"
 
-	rc "github.com/kihamo/runtime-config"
 	"github.com/kihamo/runtime-config/config"
+	"github.com/kihamo/runtime-config/internal"
 	"github.com/pkg/errors"
 	"go.etcd.io/etcd/clientv3"
 )
@@ -41,7 +41,7 @@ func (s *Store) Variables(ctx context.Context, version config.Version) ([]config
 	variables := make([]config.Variable, response.Count, response.Count)
 
 	for i, kv := range response.Kvs {
-		variables[i] = rc.NewVariable(string(kv.Key), string(kv.Value))
+		variables[i] = internal.NewVariable(string(kv.Key), string(kv.Value))
 	}
 
 	return variables, nil

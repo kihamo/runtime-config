@@ -6,9 +6,9 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/kihamo/runtime-config"
 	"github.com/kihamo/runtime-config/client"
 	"github.com/kihamo/runtime-config/client/environment"
+	"github.com/kihamo/runtime-config/internal"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 
 func main() {
 	ctx := context.Background()
-	version := config.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId)
+	version := internal.NewVersion(strconv.FormatUint(ProjectID, 10), VersionId)
 
 	/*
 		clientEtcd, err := clientv3.New(clientv3.Config{
