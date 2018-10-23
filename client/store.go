@@ -1,5 +1,7 @@
 package client
 
+//go:generate mockgen -destination=./mocks/mock_client.go -package=mocks github.com/kihamo/runtime-config/client Store
+
 import (
 	"context"
 
